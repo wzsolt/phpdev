@@ -1,0 +1,103 @@
+server {
+  server_name multireisen.logs;
+  root        /var/www/multireisen.com/ibe;
+  index       index.php;
+
+  client_max_body_size 100M;
+  fastcgi_read_timeout 1800;
+
+  location / {
+    try_files $uri $uri/ /index.php;
+
+    if (!-e $request_filename){
+        rewrite ^([^.]*[^/])$ $1/ permanent;
+        rewrite ^/(.*) /index.php?path=$1;
+    }
+  }
+
+  location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+    expires       max;
+    log_not_found off;
+    access_log    off;
+    sendfile      off;
+  }
+
+  location ~ \.php$ {
+      fastcgi_pass php72-fpm:9000;
+      fastcgi_index index.php;
+      fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+      fastcgi_param PHP_VALUE "error_log=/var/www/log/nginx/php_errors.log";
+      include fastcgi_params;
+
+      proxy_buffer_size   512k;
+      proxy_buffers   4 512k;
+      proxy_busy_buffers_size   512k;
+      fastcgi_buffers 4 512k;
+      fastcgi_buffer_size 512k; 
+  }  
+}
+
+server {
+  listen  443 ssl;
+  
+  client_max_body_size 100M;
+  fastcgi_read_timeout 1800;
+  add_header  Strict-Transport-Security "max-age=0;";
+  
+  server_name multireisen.logs;
+  root        /var/www/multireisen.com/ibe;
+  index       index.php;
+
+  ssl_certificate       /etc/nginx/certs/server.crt;
+  ssl_certificate_key   /etc/nginx/certs/server.key;
+  ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+
+  access_log "/var/www/log/nginx/ssl-access.log";
+  error_log "/var/www/log/nginx/ssl-php.error.log";
+
+  # check file exist and send request sting to index.php 
+  location / {
+      try_files $uri $uri/ /index.php;
+
+      if (!-e $request_filename){
+          rewrite ^([^.]*[^/])$ $1/ permanent;
+          rewrite ^/(.*) /index.php?path=$1;
+      }
+  }
+
+  location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+    expires       max;
+    log_not_found off;
+    access_log    off;
+    sendfile      off;    
+  }
+
+  location ~ \.php$ {
+      fastcgi_pass php72-fpm:9000;
+      fastcgi_index index.php;
+      fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+      fastcgi_param PHP_VALUE "error_log=/var/www/log/nginx/php_errors.log";
+      include fastcgi_params;
+
+      proxy_buffer_size   512k;
+      proxy_buffers   4 512k;
+      proxy_busy_buffers_size   512k;
+      fastcgi_buffers 4 512k;
+      fastcgi_buffer_size 512k; 
+  }  
+
+  # disallow access to apache configs
+  location ~ /\.ht {
+    deny all;
+  }
+
+  # disallow access to git configs path
+  location ~ /\.git {
+    deny all;
+  }
+
+  # disallow access to yii code path
+  location ~ /(protected|themes/classic/views)/ {
+    deny all;
+  }
+}

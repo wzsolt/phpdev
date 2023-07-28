@@ -1,0 +1,121 @@
+version: "3.9"
+services:
+
+    memcached:
+      image: memcached:alpine
+      container_name: php-memcached
+      networks:
+        - localdev
+
+#    mongo:
+#      image: mongo
+#      container_name: php-mongo
+#      ports:
+#        - "27017:27017"
+#      networks:
+#        - localdev
+
+#    dynamodb:
+#      command: "-jar DynamoDBLocal.jar -sharedDb -optimizeDbBeforeStartup -dbPath ./data"
+#      image: amazon/dynamodb-local:latest
+#      container_name: php-dynamo
+#      hostname: php-dynamo
+#      ports:
+#        - "8042:8000"
+#      volumes:
+#        - /Users/zsolt/servers/dynamodb:/home/dynamodblocal/data
+#      working_dir: /home/dynamodblocal
+#      networks:
+#        - localdev
+
+#    mysql:
+#      image: mysql:5.7
+#      container_name: php-mysql
+#      working_dir: /sql
+#      volumes:
+#        - ./phpdocker/mysql/my.cnf:/etc/mysql/conf.d/z_my.cnf
+#        - /Users/zsolt/servers/mysql:/var/lib/mysql
+#        - /Users/zsolt/servers/sql:/sql
+#      environment:
+#        - MYSQL_ROOT_PASSWORD=root
+#        - MYSQL_USER=root
+#        - MYSQL_PASSWORD=root
+#      ports:
+#        - "3307:3306"
+#      networks:
+#        - localdev
+
+    mariadb:
+      image: mariadb
+      container_name: php-mariadb
+      working_dir: /sql
+      volumes:
+        - ./phpdocker/mysql/my-maria.cnf:/etc/mysql/conf.d/z_my.cnf
+        - /Users/zsolt/servers/mariadb:/var/lib/mysql
+        - /Users/zsolt/servers/sql:/sql
+      environment:
+        - MYSQL_ROOT_PASSWORD=root
+        - MYSQL_USER=root
+        - MYSQL_PASSWORD=root
+      ports:
+        - "3308:3306"
+      networks:
+        - localdev
+
+    webserver:
+      image: nginx:alpine
+      container_name: php-webserver
+      working_dir: /var/www
+      tty: true
+      volumes:
+        - /Users/zsolt/www:/var/www
+        - ./phpdocker/nginx/nginx.conf:/etc/nginx/nginx.conf
+        - ./phpdocker/nginx/snippets:/etc/nginx/snippets
+        - ./phpdocker/nginx/sites:/etc/nginx/conf.d
+        - ./phpdocker/nginx/certs:/etc/nginx/certs
+      ports:
+        - "80:80"
+        - "443:443"
+      depends_on:
+        - php74-fpm
+      networks:
+        localdev:
+          aliases:
+            - pgwserver
+            - api-hunor
+            - api-sote
+
+    php74-fpm:
+      build: phpdocker/php74-fpm
+      hostname: development
+      container_name: php74-fpm
+      tty: true      
+      working_dir: /var/www
+      ports:
+        - 9000
+      networks:
+        - localdev
+      volumes:
+        - /Users/zsolt/www:/var/www
+        - ./phpdocker/php74-fpm/php-fpm-overrides.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+        - ./phpdocker/nginx/browscap/php_browscap.ini:/usr/local/php_browscap.ini
+
+    php81-fpm:
+      build: phpdocker/php81-fpm
+      hostname: development
+      container_name: php81-fpm
+      tty: true      
+      working_dir: /var/www
+      ports:
+        - 9000
+      networks:
+        - localdev
+      volumes:
+        - /Users/zsolt/www:/var/www
+        - ./phpdocker/php81-fpm/php-fpm-overrides.ini:/etc/php/8.1/fpm/conf.d/99-overrides.ini
+        - ./phpdocker/php81-fpm/php-cli-overrides.ini:/etc/php/8.1/cli/conf.d/99-overrides.ini
+        - ./phpdocker/nginx/browscap/php_browscap.ini:/usr/local/php_browscap.ini
+
+networks:
+  localdev:
+    

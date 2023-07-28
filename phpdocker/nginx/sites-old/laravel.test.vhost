@@ -1,0 +1,55 @@
+server {
+  listen  80;
+
+  client_max_body_size 100M;
+  fastcgi_read_timeout 1800;
+
+  server_name laravel.test;
+  root        /var/www/laravel/MyHobbies/public;
+  index       index.php;
+ 
+  access_log "/var/www/log/nginx/access.log";
+  
+  # check file exist and send request sting to index.php 
+  location / {
+      try_files $uri $uri/ /index.php?$query_string;
+  }
+
+  location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+    expires       max;
+    log_not_found off;
+    access_log    off;
+    sendfile      off;    
+  }
+
+  location ~ \.php$ {
+      fastcgi_pass php74-fpm:9000;
+      fastcgi_index index.php;
+      fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+      fastcgi_param PHP_VALUE "error_log=/var/www/log/nginx/laravel_php_errors.log";
+      include fastcgi_params;
+
+      proxy_buffer_size   512k;
+      proxy_buffers   4 512k;
+      proxy_busy_buffers_size   512k;
+      fastcgi_buffers 4 512k;
+      fastcgi_buffer_size 512k; 
+  }  
+
+  # disallow access to apache configs
+  location ~ /\.ht {
+    deny all;
+  }
+
+  # disallow access to git configs path
+  location ~ /\.git {
+    deny all;
+  }
+
+  # disallow access to yii code path
+  location ~ /(protected|themes/classic/views)/ {
+    deny all;
+  }
+}
+
+

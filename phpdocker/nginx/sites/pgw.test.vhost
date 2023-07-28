@@ -1,0 +1,61 @@
+server {
+  server_name pgw.test pgwserver;
+  root        /var/www/default/dev;
+  index       index.php index.html;
+
+  client_max_body_size 100M;
+  fastcgi_read_timeout 1800;
+
+  location / {
+    try_files $uri $uri/ /index.php;
+
+    if (!-e $request_filename){
+        rewrite ^([^.]*[^/])$ $1/ permanent;
+        rewrite ^/(.*) /index.php?path=$1;
+    }
+  }
+
+  location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+    expires       max;
+    log_not_found off;
+    access_log    off;
+    sendfile      off;
+  }
+  
+  include /etc/nginx/snippets/php-7.4-fpm.conf;
+}
+
+server {
+  listen  443 ssl;
+  client_max_body_size 100M;
+  fastcgi_read_timeout 1800;
+
+  ssl_certificate       /etc/nginx/certs/server.crt;
+  ssl_certificate_key   /etc/nginx/certs/server.key;
+  ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+
+  server_name pgw.test pgwserver;
+  root        /var/www/default/dev;
+  index       index.php index.html;
+
+  access_log "/var/www/log/nginx/ssl-access.log";
+  error_log "/var/www/log/nginx/ssl-php.error.log";
+
+  location / {
+    try_files $uri $uri/ /index.php;
+
+    if (!-e $request_filename){
+        rewrite ^([^.]*[^/])$ $1/ permanent;
+        rewrite ^/(.*) /index.php?path=$1;
+    }
+  }
+
+  location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+    expires       max;
+    log_not_found off;
+    access_log    off;
+    sendfile      off;
+  }
+  
+  include /etc/nginx/snippets/php-7.4-fpm.conf;
+}

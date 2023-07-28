@@ -1,0 +1,22 @@
+server {
+  server_name cinema.test;
+  root        /var/www/cinema;
+  index       index.php index.html;
+
+  client_max_body_size 100M;
+  fastcgi_read_timeout 1800;
+
+  location / {
+    try_files $uri $uri/ /index.php;
+  }
+
+  location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+    expires       max;
+    log_not_found off;
+    access_log    off;
+    sendfile      off;
+  }
+  
+  include /etc/nginx/snippets/php-7.4-fpm.conf;
+
+}
