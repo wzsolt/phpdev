@@ -1,5 +1,5 @@
 #!/bin/bash
-valid_versions=(74 81)
+valid_versions=(74 82)
 default_version=74
 selected_version=$default_version
 
@@ -17,7 +17,7 @@ in_array () {
 }
 
 # echo "-----------------------------------------"
-# echo "Params for PHP version: 74, 81"
+# echo "Params for PHP version: 74, 82"
 # echo " (default: $default_version)"
 # echo "-----------------------------------------"
 

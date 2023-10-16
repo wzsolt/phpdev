@@ -100,11 +100,11 @@ services:
         - ./phpdocker/php74-fpm/php-fpm-overrides.ini:/usr/local/etc/php/conf.d/99-overrides.ini
         - ./phpdocker/nginx/browscap/php_browscap.ini:/usr/local/php_browscap.ini
 
-    php81-fpm:
-      build: phpdocker/php81-fpm
+    php82-fpm:
+      build: phpdocker/php82-fpm
       hostname: development
-      container_name: php81-fpm
-      tty: true      
+      container_name: php82-fpm
+      tty: true
       working_dir: /var/www
       ports:
         - 9000
@@ -112,8 +112,8 @@ services:
         - localdev
       volumes:
         - /Users/zsolt/www:/var/www
-        - ./phpdocker/php81-fpm/php-fpm-overrides.ini:/etc/php/8.1/fpm/conf.d/99-overrides.ini
-        - ./phpdocker/php81-fpm/php-cli-overrides.ini:/etc/php/8.1/cli/conf.d/99-overrides.ini
+        - ./phpdocker/php82-fpm/php-fpm-overrides.ini:/etc/php/8.2/fpm/conf.d/99-overrides.ini
+        - ./phpdocker/php82-fpm/php-cli-overrides.ini:/etc/php/8.2/cli/conf.d/99-overrides.ini
         - ./phpdocker/nginx/browscap/php_browscap.ini:/usr/local/php_browscap.ini
 
 networks:
