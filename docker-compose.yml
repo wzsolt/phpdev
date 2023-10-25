@@ -112,8 +112,8 @@ services:
         - localdev
       volumes:
         - /Users/zsolt/www:/var/www
-        - ./phpdocker/php82-fpm/php-fpm-overrides.ini:/etc/php/8.2/fpm/conf.d/99-overrides.ini
-        - ./phpdocker/php82-fpm/php-cli-overrides.ini:/etc/php/8.2/cli/conf.d/99-overrides.ini
+        - ./phpdocker/php82-fpm/php-fpm-overrides.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+#        - ./phpdocker/php82-fpm/php-cli-overrides.ini:/etc/php/8.2/cli/conf.d/99-overrides.ini
         - ./phpdocker/nginx/browscap/php_browscap.ini:/usr/local/php_browscap.ini
 
 networks:

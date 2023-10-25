@@ -4,7 +4,7 @@ server {
   client_max_body_size 100M;
   fastcgi_read_timeout 1800;
 
-  server_name cbt.airwin.test;
+  server_name cbt.airwin.test cbt-admin.airwin.test cbtadmin.airwin.test;
   root        /var/www/airwin-cbt/web/public;
   index       index.php;
  
@@ -52,7 +52,7 @@ server {
   fastcgi_read_timeout 1800;
   add_header  Strict-Transport-Security "max-age=0;";
   
-  server_name cbt.airwin.test;
+  server_name cbt.airwin.test cbt-admin.airwin.test cbtadmin.airwin.test;
   root        /var/www/airwin-cbt/web/public;
   index       index.php;
 
